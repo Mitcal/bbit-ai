@@ -19,7 +19,7 @@ use Laravel\Ai\Promptable;
 use Stringable;
 
 #[Provider(Lab::OpenRouter)]
-#[Model('openrouter/free')]
+#[Model('meta-llama/llama-3.3-70b-instruct:free')]
 #[MaxSteps(5)]
 #[Timeout(60)]
 class BookingAgent implements Agent, Conversational, HasTools
