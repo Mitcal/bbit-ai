@@ -5,6 +5,8 @@ namespace App\Livewire;
 use App\Ai\Agents\BookingAgent;
 use App\Ai\Tools\CreateBooking;
 use App\Enums\ServiceType;
+use Carbon\Carbon;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Validation\Rules\Enum;
 use Illuminate\View\View;
 use Laravel\Ai\Streaming\Events\TextDelta;
@@ -43,7 +45,8 @@ class BookingWizard extends Component
         $this->chatStarted = true;
         $this->isLoading = true;
         $this->errorMessage = null;
-        $this->messages[] = ['role' => 'user', 'content' => "I'd like to book {$this->service} on {$this->preferredDate}."];
+        $formattedDate = Carbon::parse($this->preferredDate)->format('l, j F Y');
+        $this->messages[] = ['role' => 'user', 'content' => "I'd like to book {$this->service} on $formattedDate."];
 
         $this->js('$wire.streamResponse()');
     }
@@ -55,6 +58,16 @@ class BookingWizard extends Component
         if ($userMessage === '' || $this->isLoading) {
             return;
         }
+
+        $key = 'ai-booking:'.request()->ip();
+
+        if (RateLimiter::tooManyAttempts($key, maxAttempts: 10)) {
+            $this->errorMessage = 'You\'re sending messages too quickly. Please wait a moment and try again.';
+
+            return;
+        }
+
+        RateLimiter::hit($key);
 
         $this->userInput = '';
         $this->isLoading = true;

@@ -27,7 +27,7 @@ class CheckDateAvailability implements Tool
         $date = Carbon::parse($request['date']);
 
         if (! Booking::whereDate('date', $date)->exists()) {
-            return "The date {$date->format('Y-m-d')} is available.";
+            return "The date {$date->format('l, j F Y')} is available.";
         }
 
         $available = [];
@@ -38,12 +38,12 @@ class CheckDateAvailability implements Tool
             $candidate = $date->copy()->addDays(-$i);
 
             if ($candidate->isFuture() && ! Booking::whereDate('date', $candidate)->exists()) {
-                $available[$candidate->toDateString()] = $candidate->format('l, d F Y');
+                $available[$candidate->toDateString()] = $candidate->format('l, j F Y');
             }
 
             $candidate = $date->copy()->addDays($i++);
             if (! Booking::whereDate('date', $candidate)->exists()) {
-                $available[$candidate->toDateString()] = $candidate->format('l, d F Y');
+                $available[$candidate->toDateString()] = $candidate->format('l, j F Y');
             }
         }
 
@@ -51,7 +51,7 @@ class CheckDateAvailability implements Tool
 
         $list = implode('', array_map(fn ($d) => "\n- {$d}", array_values($available)));
 
-        return "The date {$date->format('l, d F Y')} is already booked. The next available dates are:{$list}";
+        return "The date {$date->format('l, j F Y')} is already booked. The next available dates are:{$list}";
     }
 
     /**

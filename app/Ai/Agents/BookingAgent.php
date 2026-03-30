@@ -6,7 +6,6 @@ use App\Ai\Tools\CheckDateAvailability;
 use App\Ai\Tools\CreateBooking;
 use App\Enums\ServiceType;
 use Laravel\Ai\Attributes\MaxSteps;
-use Laravel\Ai\Attributes\Model;
 use Laravel\Ai\Attributes\Provider;
 use Laravel\Ai\Attributes\Timeout;
 use Laravel\Ai\Contracts\Agent;
@@ -18,8 +17,7 @@ use Laravel\Ai\Messages\Message;
 use Laravel\Ai\Promptable;
 use Stringable;
 
-#[Provider(Lab::OpenRouter)]
-#[Model('meta-llama/llama-3.3-70b-instruct:free')]
+#[Provider(Lab::OpenAI)]
 #[MaxSteps(5)]
 #[Timeout(60)]
 class BookingAgent implements Agent, Conversational, HasTools
@@ -44,13 +42,15 @@ class BookingAgent implements Agent, Conversational, HasTools
 
         Workflow — follow this exactly:
         1. Use the check_date_availability tool to verify the requested date.
-        2. If the date is unavailable, inform the user and present the alternative dates returned by the tool as a markdown unordered list (one date per line). Ask them to pick one.
+        2. If the date is unavailable, inform the user (state the unavailable date) and present the alternative dates returned by the tool as a markdown unordered list (one date per line). Ask them to pick one.
         3. Once you have a confirmed available date and service, summarise in one short sentence (e.g. "Residential window cleaning on Monday, 30 March 2026 — shall I confirm?").
         4. When the user confirms, call create_booking immediately.
 
         Rules:
         - Do not ask for any information beyond service and date.
         - Keep replies brief and friendly. Use British English.
+        - Be polite.
+        - Only assist with booking Bright Windows services. If the user asks about anything unrelated to booking, politely decline and redirect them to the booking task.
         INSTRUCTIONS;
     }
 

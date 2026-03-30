@@ -10,7 +10,7 @@
                 <div class="space-y-4">
                     <flux:field>
                         <flux:label>Service required</flux:label>
-                        <flux:select wire:model="service" placeholder="Select a service">
+                        <flux:select variant="listbox" wire:model="service" placeholder="Select a service">
                             @foreach (\App\Enums\ServiceType::cases() as $type)
                                 <flux:select.option value="{{ $type->value }}">{{ $type->value }}</flux:select.option>
                             @endforeach
@@ -44,7 +44,7 @@
         {{-- Step 2: AI chat --}}
         <flux:heading size="xl" level="1" class="mb-1">Booking Assistant</flux:heading>
         <flux:text class="mb-6">
-            Chatting about: <strong>{{ $service }}</strong> on <strong>{{ $preferredDate }}</strong>
+            Chatting about: <strong>{{ $service }}</strong> on <strong>{{ Carbon\Carbon::parse($preferredDate)->format('l, j F Y') }}</strong>
         </flux:text>
         <flux:separator variant="subtle" class="mb-6" />
 
@@ -115,7 +115,7 @@
                                 wire:model="userInput"
                                 placeholder="Type your message…"
                                 class="flex-1"
-                                wire:loading.attr="disabled"
+                                wire:loading.attr="readonly"
                                 wire:target="sendMessage,startChat"
                             />
                             <flux:button
@@ -129,6 +129,10 @@
                     </div>
                 @endif
             </div>
+
+            <flux:text size="sm" class="text-center text-zinc-400 dark:text-zinc-500">
+                Powered by AI · Responses may take a few seconds
+            </flux:text>
 
             <flux:button :href="route('home')" variant="ghost" icon="arrow-left" size="sm">
                 View all bookings
