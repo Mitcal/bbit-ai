@@ -14,7 +14,11 @@
     </head>
     <body class="min-h-screen bg-white dark:bg-zinc-800 font-instrument-sans antialiased">
         <flux:header container class="bg-zinc-50 dark:bg-zinc-900 border-b border-zinc-200 dark:border-zinc-700">
-            <flux:brand href="{{ route('home') }}" name="Bright Windows" />
+            <flux:brand href="{{ route('home') }}" name="Bright Windows">
+                <x-slot name="logo">
+                    <img src="{{ asset('favicon.ico') }}" alt="Bumblebee IT Solutions" class="h-8 w-auto" />
+                </x-slot>
+            </flux:brand>
             <flux:spacer />
             <flux:navbar>
                 <flux:navbar.item :href="route('home')" :current="request()->routeIs('home')" wire:navigate>All Bookings</flux:navbar.item>
